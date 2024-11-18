@@ -1,68 +1,89 @@
 import React, { useState } from 'react';
-import '../styles/clientes.css';
+import '../styles/clientes.css'; // Certifique-se de que o arquivo de estilo exista e esteja ajustado
 
 function Clientes() {
   const [action, setAction] = useState('');
   const [result, setResult] = useState(null);
-  const [idCliente, setIdCliente] = useState('');
+  const [cpfCliente, setCpfCliente] = useState('');
+  const [enderecoData, setEnderecoData] = useState({
+    rua: '',
+    bairro: '',
+    numero: '',
+    cep: '',
+  });
   const [clienteData, setClienteData] = useState({
     nome: '',
     email: '',
     telefone1: '',
-    telefone2: ''
+    telefone2: '',
+    cpf: '',
   });
 
   const handleAction = async () => {
     try {
+      let response;
       switch (action) {
         case 'listar':
-          const listarResponse = await fetch('http://localhost:8080/api/clientes/listar');
-          const listarData = await listarResponse.json();
-          setResult(listarData);
+          response = await fetch('http://localhost:8080/api/clientes/listar');
+          const clientesData = await response.json();
+          setResult(clientesData);
           break;
         case 'cadastrar':
-          await fetch('http://localhost:8080/api/clientes/cadastrar', {
+          response = await fetch('http://localhost:8080/api/clientes/cadastro', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(clienteData)
+            body: JSON.stringify(clienteData),
           });
-          setResult('Cliente cadastrado com sucesso!');
+          if (response.ok) {
+            setResult('Cliente cadastrado com sucesso!');
+          } else {
+            setResult('Erro ao cadastrar cliente.');
+          }
           break;
-        case 'atualizar':
-          await fetch(`http://localhost:8080/api/clientes/atualizar/${idCliente}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(clienteData)
-          });
-          setResult('Cliente atualizado com sucesso!');
-          break;
-        case 'deletar':
-          await fetch(`http://localhost:8080/api/clientes/deletar/${idCliente}`, {
-            method: 'DELETE'
-          });
-          setResult('Cliente deletado com sucesso!');
+        case 'cadastrarEndereco':
+          // Transformar os campos de endereço em JSON
+          const enderecoJson = {
+            Rua: enderecoData.rua,
+            Bairro: enderecoData.bairro,
+            Numero: enderecoData.numero,
+            Cep: enderecoData.cep,
+          };
+
+          response = await fetch(
+            `http://localhost:8080/api/clientes/cadastro/endereco/${cpfCliente}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(enderecoJson),
+            }
+          );
+          if (response.ok) {
+            setResult('Endereço cadastrado com sucesso!');
+          } else {
+            setResult('Erro ao cadastrar endereço.');
+          }
           break;
         default:
           setResult('Selecione uma ação válida.');
+          break;
       }
     } catch (error) {
       console.error('Erro ao executar ação:', error);
-      setResult('Erro ao executar ação. Verifique os dados e tente novamente.');
+      setResult('Erro ao realizar a ação. Verifique os dados e tente novamente.');
     }
   };
 
   return (
     <div className="clientes-container">
-      <h2>Clientes</h2>
+      <h2>Gerenciamento de Clientes</h2>
       <div className="clientes-actions">
         <select onChange={(e) => setAction(e.target.value)} value={action}>
-          <option value="">Selecione uma opção</option>
+          <option value="">Selecione uma ação</option>
           <option value="listar">Listar Clientes</option>
           <option value="cadastrar">Cadastrar Cliente</option>
-          <option value="atualizar">Atualizar Cliente</option>
-          <option value="deletar">Deletar Cliente</option>
+          <option value="cadastrarEndereco">Cadastrar Endereço</option>
         </select>
-        {(action === 'cadastrar' || action === 'atualizar') && (
+        {action === 'cadastrar' && (
           <div className="input-group">
             <input
               type="text"
@@ -88,15 +109,45 @@ function Clientes() {
               value={clienteData.telefone2}
               onChange={(e) => setClienteData({ ...clienteData, telefone2: e.target.value })}
             />
+            <input
+              type="text"
+              placeholder="CPF"
+              value={clienteData.cpf}
+              onChange={(e) => setClienteData({ ...clienteData, cpf: e.target.value })}
+            />
           </div>
         )}
-        {(action === 'atualizar' || action === 'deletar') && (
+        {action === 'cadastrarEndereco' && (
           <div className="input-group">
             <input
               type="text"
-              placeholder="ID do Cliente"
-              value={idCliente}
-              onChange={(e) => setIdCliente(e.target.value)}
+              placeholder="CPF do Cliente"
+              value={cpfCliente}
+              onChange={(e) => setCpfCliente(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Rua"
+              value={enderecoData.rua}
+              onChange={(e) => setEnderecoData({ ...enderecoData, rua: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Bairro"
+              value={enderecoData.bairro}
+              onChange={(e) => setEnderecoData({ ...enderecoData, bairro: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Número"
+              value={enderecoData.numero}
+              onChange={(e) => setEnderecoData({ ...enderecoData, numero: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="CEP"
+              value={enderecoData.cep}
+              onChange={(e) => setEnderecoData({ ...enderecoData, cep: e.target.value })}
             />
           </div>
         )}
@@ -106,14 +157,37 @@ function Clientes() {
       {result && typeof result === 'string' ? (
         <p>{result}</p>
       ) : (
-        <ul className="result-list">
-          {result &&
-            result.map((cliente) => (
-              <li key={cliente.CPF}>
-                {cliente.nome} - {cliente.email} - {cliente.telefone1} - {cliente.telefone2}
-              </li>
-            ))}
-        </ul>
+        <table className="result-table">
+          <thead>
+            <tr>
+              <th>CPF</th>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Telefone 1</th>
+              <th>Telefone 2</th>
+              <th>Rua</th>
+              <th>Bairro</th>
+              <th>Número</th>
+              <th>CEP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {result &&
+              result.map((cliente, index) => (
+                <tr key={index}>
+                  <td>{cliente.CPF}</td>
+                  <td>{cliente.Nome}</td>
+                  <td>{cliente.Email}</td>
+                  <td>{cliente.TELEFONE1}</td>
+                  <td>{cliente.TELEFONE2 || 'N/A'}</td>
+                  <td>{cliente.Rua || 'N/A'}</td>
+                  <td>{cliente.Bairro || 'N/A'}</td>
+                  <td>{cliente.Numero || 'N/A'}</td>
+                  <td>{cliente.Cep || 'N/A'}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
       )}
     </div>
   );
