@@ -23,9 +23,7 @@ function Servicos() {
             setResult('O ID do funcionário é obrigatório para esta operação.');
             return;
           }
-          response = await fetch(
-            `http://localhost:8080/api/servicos/limpeza/${inputData.id}`
-          );
+          response = await fetch(`http://localhost:8080/api/servicos/limpeza/${inputData.id}`);
           setResult(await response.json());
           break;
 
@@ -42,12 +40,7 @@ function Servicos() {
               id: parseInt(inputData.id, 10),
             }),
           });
-          if (response.ok) {
-            setResult('Limpeza adicionada com sucesso!');
-          } else {
-            const errorData = await response.json();
-            setResult(`Erro ao adicionar limpeza: ${errorData.message || 'Erro desconhecido.'}`);
-          }
+          setResult(response.ok ? 'Limpeza adicionada com sucesso!' : 'Erro ao adicionar limpeza.');
           break;
 
         case 'listarManutencao':
@@ -60,11 +53,8 @@ function Servicos() {
             setResult('O ID do funcionário é obrigatório para esta operação.');
             return;
           }
-          response = await fetch(
-            `http://localhost:8080/api/servicos/manutencao/${inputData.id}`
-          );
-          const manutencaoData = await response.json();
-          setResult(Array.isArray(manutencaoData) ? manutencaoData : [manutencaoData]);
+          response = await fetch(`http://localhost:8080/api/servicos/manutencao/${inputData.id}`);
+          setResult(await response.json());
           break;
 
         case 'adicionarManutencao':
@@ -80,12 +70,7 @@ function Servicos() {
               id: parseInt(inputData.id, 10),
             }),
           });
-          if (response.ok) {
-            setResult('Manutenção adicionada com sucesso!');
-          } else {
-            const errorData = await response.json();
-            setResult(`Erro ao adicionar manutenção: ${errorData.message || 'Erro desconhecido.'}`);
-          }
+          setResult(response.ok ? 'Manutenção adicionada com sucesso!' : 'Erro ao adicionar manutenção.');
           break;
 
         case 'listarReservas':
@@ -93,11 +78,8 @@ function Servicos() {
             setResult('O ID do recepcionista é obrigatório para esta operação.');
             return;
           }
-          response = await fetch(
-            `http://localhost:8080/api/servicos/reservas/listar/${inputData.id}`
-          );
-          const reservas = await response.json();
-          setResult(Array.isArray(reservas) ? reservas : [reservas]);
+          response = await fetch(`http://localhost:8080/api/servicos/reservas/listar/${inputData.id}`);
+          setResult(await response.json());
           break;
 
         default:
@@ -114,7 +96,11 @@ function Servicos() {
     <div className="servicos-container">
       <h2>Gerenciamento de Serviços</h2>
       <div className="servicos-actions">
-        <select onChange={(e) => setAction(e.target.value)} value={action}>
+        <select
+          className="dropdown-menu"
+          onChange={(e) => setAction(e.target.value)}
+          value={action}
+        >
           <option value="">Selecione uma ação</option>
           <option value="listarLimpezas">Listar Limpezas</option>
           <option value="consultarLimpezas">Consultar Limpezas por Funcionário</option>
@@ -151,30 +137,34 @@ function Servicos() {
           </>
         )}
 
-        <button onClick={handleAction}>Executar</button>
+        <button className="executar-button" onClick={handleAction}>
+          Executar
+        </button>
       </div>
       <h3>Resultados:</h3>
       {result && typeof result === 'string' ? (
         <p>{result}</p>
       ) : result && Array.isArray(result) ? (
-        <table className="result-table">
-          <thead>
-            <tr>
-              {Object.keys(result[0] || {}).map((key, index) => (
-                <th key={index}>{key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {result.map((item, index) => (
-              <tr key={index}>
-                {Object.values(item).map((value, subIndex) => (
-                  <td key={subIndex}>{value}</td>
+        <div className="result-wrapper">
+          <table className="result-table">
+            <thead>
+              <tr>
+                {Object.keys(result[0] || {}).map((key, index) => (
+                  <th key={index}>{key}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {result.map((item, index) => (
+                <tr key={index}>
+                  {Object.values(item).map((value, subIndex) => (
+                    <td key={subIndex}>{value}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p>Nenhum resultado encontrado.</p>
       )}
