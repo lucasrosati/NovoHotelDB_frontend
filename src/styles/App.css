@@ -1,46 +1,37 @@
 body {
+  background-color: #1e1e1e; /* Cor escura para todo o fundo */
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  background-color: #333; /* Cor de fundo escuro */
-  color: white; /* Cor do texto */
-  height: 100vh;
-}
-
-.App {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; /* Garante que o fundo ocupe toda a tela */
+  font-family: Arial, sans-serif;
+  color: #ffffff; /* Cor do texto padrão */
 }
 
 .App-header {
-  width: 100%;
-  max-width: 1200px; /* Centraliza o conteúdo */
-  text-align: center;
+  background-color: #1e1e1e; /* Mesma cor do fundo */
+  color: #ffffff;
   padding: 20px;
-  margin: 0 auto;
-  background-color: #444; /* Cor de fundo para o cabeçalho */
   border-radius: 10px;
+  text-align: center;
+  font-family: Arial, sans-serif;
 }
 
 nav ul {
   list-style: none;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
 }
 
 nav ul li {
   display: inline;
+  margin: 0 15px;
 }
 
 nav ul li a {
+  color: #00d084;
   text-decoration: none;
-  color: #4caf50;
-  font-weight: bold;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
 }
 
 .result-table {
@@ -51,12 +42,16 @@ nav ul li a {
 
 .result-table th,
 .result-table td {
-  border: 1px solid #4caf50;
-  padding: 10px;
-  text-align: center;
+  border: 1px solid #00d084;
+  padding: 8px;
+  text-align: left;
 }
 
 .result-table th {
-  background-color: #4caf50;
-  color: white;
+  background-color: #00d084;
+  color: #ffffff;
+}
+
+.result-table tr:nth-child(even) {
+  background-color: #2c2c2c;
 }

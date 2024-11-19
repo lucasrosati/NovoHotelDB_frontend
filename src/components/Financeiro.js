@@ -68,7 +68,11 @@ function Financeiro() {
     <div className="financeiro-container">
       <h2>Gerenciamento Financeiro</h2>
       <div className="financeiro-actions">
-        <select onChange={(e) => setAction(e.target.value)} value={action}>
+        <select
+          className="dropdown-menu"
+          onChange={(e) => setAction(e.target.value)}
+          value={action}
+        >
           <option value="">Selecione uma ação</option>
           <option value="listarPagamentos">Listar Pagamentos</option>
           <option value="consultarPagamento">Consultar Pagamento</option>
@@ -93,47 +97,53 @@ function Financeiro() {
           />
         )}
 
-        <button onClick={handleAction}>Executar</button>
+        <button className="executar-button" onClick={handleAction}>
+          Executar
+        </button>
       </div>
       <h3>Resultados:</h3>
       {result && typeof result === 'string' ? (
         <p>{result}</p>
-      ) : result && Array.isArray(result) ? (
-        <table className="result-table">
-          <thead>
-            <tr>
-              {Object.keys(result[0] || {}).map((key, index) => (
-                <th key={index}>{key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {result.map((item, index) => (
-              <tr key={index}>
-                {Object.values(item).map((value, subIndex) => (
-                  <td key={subIndex}>{value}</td>
+      ) : result && typeof result === 'object' && !Array.isArray(result) ? (
+        <div className="result-wrapper">
+          <table className="result-table">
+            <thead>
+              <tr>
+                {Object.keys(result).map((key, index) => (
+                  <th key={index}>{key}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : result && typeof result === 'object' && result !== null ? (
-        <table className="result-table">
-          <thead>
-            <tr>
-              {Object.keys(result).map((key, index) => (
-                <th key={index}>{key}</th>
+            </thead>
+            <tbody>
+              <tr>
+                {Object.values(result).map((value, index) => (
+                  <td key={index}>{value}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      ) : result && Array.isArray(result) ? (
+        <div className="result-wrapper">
+          <table className="result-table">
+            <thead>
+              <tr>
+                {Object.keys(result[0] || {}).map((key, index) => (
+                  <th key={index}>{key}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {result.map((item, index) => (
+                <tr key={index}>
+                  {Object.values(item).map((value, subIndex) => (
+                    <td key={subIndex}>{value}</td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {Object.values(result).map((value, index) => (
-                <td key={index}>{value}</td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p>Nenhum resultado encontrado.</p>
       )}

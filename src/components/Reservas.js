@@ -27,19 +27,25 @@ function Reservas() {
             setResult('O ID da reserva é obrigatório.');
             return;
           }
-          response = await fetch(`http://localhost:8080/api/reservas/${inputData.idReserva}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            setResult(data);
-          } else {
+          try {
+            response = await fetch(`http://localhost:8080/api/reservas/${inputData.idReserva}`, {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+            });
+        
+            if (response.ok) {
+              const data = await response.json();
+              // Corrigir para exibir como tabela no caso de um único objeto
+              setResult([data]);
+            } else {
+              setResult('Erro ao buscar status da reserva. Verifique o ID informado.');
+            }
+          } catch (error) {
+            console.error('Erro ao buscar status da reserva:', error);
             setResult('Erro ao buscar status da reserva.');
           }
           break;
-
+          
         case 'cancelarReserva':
           if (!inputData.idReserva) {
             setResult('O ID da reserva é obrigatório.');
@@ -96,11 +102,23 @@ function Reservas() {
     }
   };
 
+  const formatHeader = (key) => {
+    const headers = {
+      id_reserva: 'ID',
+      fk_Quarto_Numero: 'Num. do Quarto',
+      fk_Recepcionista_fk_Funcionario_Id_Funcionario: 'ID Funcionário',
+      fk_Cliente_fk_Pessoa_CPF: 'CPF do Cliente',
+      Check_in: 'Check-in',
+      Check_out: 'Check-out',
+    };
+    return headers[key] || key;
+  };
+
   return (
     <div className="reservas-container">
       <h2>Gerenciamento de Reservas</h2>
       <div className="reservas-actions">
-        <select onChange={(e) => setAction(e.target.value)} value={action}>
+        <select className="dropdown-menu" onChange={(e) => setAction(e.target.value)} value={action}>
           <option value="">Selecione uma ação</option>
           <option value="listarReservas">Listar Reservas</option>
           <option value="checarStatus">Checar Status</option>
@@ -159,47 +177,34 @@ function Reservas() {
           </>
         )}
 
-        <button onClick={handleAction}>Executar</button>
+        <button className="executar-button" onClick={handleAction}>
+          Executar
+        </button>
       </div>
       <h3>Resultados:</h3>
       {result && typeof result === 'string' ? (
         <p>{result}</p>
       ) : result && Array.isArray(result) ? (
-        <table className="result-table">
-          <thead>
-            <tr>
-              {Object.keys(result[0] || {}).map((key, index) => (
-                <th key={index}>{key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {result.map((item, index) => (
-              <tr key={index}>
-                {Object.values(item).map((value, subIndex) => (
-                  <td key={subIndex}>{value}</td>
+        <div className="result-wrapper">
+          <table className="result-table">
+            <thead>
+              <tr>
+                {Object.keys(result[0] || {}).map((key, index) => (
+                  <th key={index}>{formatHeader(key)}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : result && typeof result === 'object' ? (
-        <table className="result-table">
-          <thead>
-            <tr>
-              {Object.keys(result).map((key, index) => (
-                <th key={index}>{key}</th>
+            </thead>
+            <tbody>
+              {result.map((item, index) => (
+                <tr key={index}>
+                  {Object.values(item).map((value, subIndex) => (
+                    <td key={subIndex}>{value}</td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {Object.values(result).map((value, index) => (
-                <td key={index}>{value}</td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p>Nenhum resultado encontrado.</p>
       )}
