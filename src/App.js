@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Financeiro from './components/Financeiro';
 import Clientes from './components/Clientes';
-import Quartos from './components/Quartos'; // Importa o componente Quartos
+import Quartos from './components/Quartos';
+import Servicos from './components/Servicos'; // Importa o componente Serviços
 
 function App() {
   return (
@@ -19,14 +20,18 @@ function App() {
                 <Link to="/clientes">Clientes</Link>
               </li>
               <li>
-                <Link to="/quartos">Quartos</Link> {/* Adiciona Quartos ao menu */}
+                <Link to="/quartos">Quartos</Link>
+              </li>
+              <li>
+                <Link to="/servicos">Serviços</Link> {/* Link para Serviços */}
               </li>
             </ul>
           </nav>
           <Routes>
             <Route path="/financeiro" element={<Financeiro />} />
             <Route path="/clientes" element={<Clientes />} />
-            <Route path="/quartos" element={<Quartos />} /> {/* Define a rota para Quartos */}
+            <Route path="/quartos" element={<Quartos />} />
+            <Route path="/servicos" element={<Servicos />} /> {/* Rota para Serviços */}
           </Routes>
         </Router>
       </header>
