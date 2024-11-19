@@ -88,35 +88,35 @@ function Funcionarios() {
           break;
 
         case 'cadastrarEndereco':
-        response = await fetch(`http://localhost:8080/api/funcionarios/cadastro/endereco/${inputData.cpf}`, {
+          response = await fetch(`http://localhost:8080/api/funcionarios/cadastro/endereco/${inputData.cpf}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-            Rua: inputData.rua,
-            Numero: inputData.numero,
-            Bairro: inputData.bairro,
-            Cep: inputData.cep,
-            fk_Pessoa_CPF: inputData.cpf, // Incluindo o CPF no formato solicitado
+              Rua: inputData.rua,
+              Numero: inputData.numero,
+              Bairro: inputData.bairro,
+              Cep: inputData.cep,
+              fk_Pessoa_CPF: inputData.cpf,
             }),
-        });
-        setResult(response.ok ? 'Endereço cadastrado com sucesso!' : 'Erro ao cadastrar endereço.');
-        break;
-          
+          });
+          setResult(response.ok ? 'Endereço cadastrado com sucesso!' : 'Erro ao cadastrar endereço.');
+          break;
+
         case 'atualizarEndereco':
-        response = await fetch(`http://localhost:8080/api/funcionarios/atualizar/endereco/${inputData.cpf}`, {
+          response = await fetch(`http://localhost:8080/api/funcionarios/atualizar/endereco/${inputData.cpf}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-            Rua: inputData.rua,
-            Numero: inputData.numero,
-            Bairro: inputData.bairro,
-            Cep: inputData.cep,
-            fk_Pessoa_CPF: inputData.cpf, // Inclui o CPF no corpo do JSON
+              Rua: inputData.rua,
+              Numero: inputData.numero,
+              Bairro: inputData.bairro,
+              Cep: inputData.cep,
+              fk_Pessoa_CPF: inputData.cpf,
             }),
-        });
-        setResult(response.ok ? 'Endereço atualizado com sucesso!' : 'Erro ao atualizar endereço.');
-        break;
-          
+          });
+          setResult(response.ok ? 'Endereço atualizado com sucesso!' : 'Erro ao atualizar endereço.');
+          break;
+
         case 'adicionarGerente':
           response = await fetch('http://localhost:8080/api/funcionarios/adicionar/gerente', {
             method: 'POST',
@@ -148,7 +148,7 @@ function Funcionarios() {
     <div className="funcionarios-container">
       <h2>Gerenciamento de Funcionários</h2>
       <div className="funcionarios-actions">
-        <select onChange={(e) => setAction(e.target.value)} value={action}>
+        <select className="dropdown-menu" onChange={(e) => setAction(e.target.value)} value={action}>
           <option value="">Selecione uma ação</option>
           <option value="listarFuncionarios">Listar Funcionários</option>
           <option value="listarCamareiras">Listar Camareiras</option>
@@ -245,33 +245,37 @@ function Funcionarios() {
           </>
         ) : null}
 
-        <button onClick={handleAction}>Executar</button>
+        <button className="executar-button" onClick={handleAction}>
+          Executar
+        </button>
       </div>
       <h3>Resultados:</h3>
-      {result && typeof result === 'string' ? (
-        <p>{result}</p>
-      ) : result && Array.isArray(result) ? (
-        <table className="result-table">
-          <thead>
-            <tr>
-              {Object.keys(result[0] || {}).map((key, index) => (
-                <th key={index}>{key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {result.map((item, index) => (
-              <tr key={index}>
-                {Object.values(item).map((value, subIndex) => (
-                  <td key={subIndex}>{value}</td>
+      <div className="result-wrapper">
+        {result && typeof result === 'string' ? (
+          <p>{result}</p>
+        ) : result && Array.isArray(result) ? (
+          <table className="result-table">
+            <thead>
+              <tr>
+                {Object.keys(result[0] || {}).map((key, index) => (
+                  <th key={index}>{key}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>Nenhum resultado encontrado.</p>
-      )}
+            </thead>
+            <tbody>
+              {result.map((item, index) => (
+                <tr key={index}>
+                  {Object.values(item).map((value, subIndex) => (
+                    <td key={subIndex}>{value}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>Nenhum resultado encontrado.</p>
+        )}
+      </div>
     </div>
   );
 }
