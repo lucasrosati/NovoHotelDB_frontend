@@ -1,0 +1,62 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #333; /* Cor de fundo escuro */
+  color: white; /* Cor do texto */
+  height: 100vh;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Garante que o fundo ocupe toda a tela */
+}
+
+.App-header {
+  width: 100%;
+  max-width: 1200px; /* Centraliza o conteúdo */
+  text-align: center;
+  padding: 20px;
+  margin: 0 auto;
+  background-color: #444; /* Cor de fundo para o cabeçalho */
+  border-radius: 10px;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+nav ul li {
+  display: inline;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.result-table th,
+.result-table td {
+  border: 1px solid #4caf50;
+  padding: 10px;
+  text-align: center;
+}
+
+.result-table th {
+  background-color: #4caf50;
+  color: white;
+}

@@ -1,0 +1,76 @@
+/* Contêiner geral */
+.funcionarios-container {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #f0f0f0;
+  }
+  
+  /* Estilização das ações (select, inputs, botões) */
+  .funcionarios-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* Espaçamento entre os campos */
+    justify-content: center;
+    margin-bottom: 20px; /* Separação dos campos para os resultados */
+  }
+  
+  .funcionarios-actions select,
+  .funcionarios-actions input,
+  .funcionarios-actions button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #4caf50;
+    background-color: #444;
+    color: #f0f0f0;
+  }
+  
+  /* Botão de ação */
+  .funcionarios-actions button {
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .funcionarios-actions button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Resultados */
+  .result-table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+    color: #f0f0f0;
+  }
+  
+  .result-table th,
+  .result-table td {
+    border: 1px solid #4caf50;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .result-table th {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .result-table tr:nth-child(even) {
+    background-color: #444;
+  }
+  
+  .result-table tr:nth-child(odd) {
+    background-color: #555;
+  }
+  
+  /* Mensagem de resultado */
+  .result-message {
+    font-size: 18px;
+    margin-top: 15px;
+    text-align: center;
+  }
+  
