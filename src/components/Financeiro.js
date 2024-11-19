@@ -7,6 +7,7 @@ function Financeiro() {
   const [inputData, setInputData] = useState({
     idReserva: '',
     idPagamento: '',
+    idNota: '',
   });
 
   const handleAction = async () => {
@@ -43,7 +44,7 @@ function Financeiro() {
           response = await fetch(
             `http://localhost:8080/api/pagamento/confirmar/${inputData.idReserva}`,
             {
-              method: 'PUT', // Ajustado para PUT
+              method: 'PUT',
             }
           );
           if (response.ok) {
@@ -51,6 +52,44 @@ function Financeiro() {
           } else {
             const errorData = await response.json();
             setResult(`Erro ao confirmar pagamento: ${errorData.message || 'Erro desconhecido.'}`);
+          }
+          break;
+
+        case 'listarNotas':
+          response = await fetch('http://localhost:8080/api/notas/listar');
+          if (response.ok) {
+            const notasData = await response.json();
+            setResult(
+              notasData.map((nota) => ({
+                Código: nota.Codigo,
+                Valor: nota.Valor,
+                CNPJ: nota.CNPJ_Hotel, // Mantém o nome da coluna como está
+                'ID Reserva': nota.fk_ReservaClienteRecepcionistaQuarto_id_reserva,
+              }))
+            );
+          } else {
+            setResult('Erro ao listar notas.');
+          }
+          break;
+        
+        case 'consultarNota':
+          if (!inputData.idNota) {
+            setResult('O ID da nota é obrigatório.');
+            return;
+          }
+          response = await fetch(`http://localhost:8080/api/notas/${inputData.idNota}`);
+          if (response.ok) {
+            const nota = await response.json();
+            setResult([
+              {
+                Código: nota.Codigo,
+                Valor: nota.Valor,
+                CNPJ: nota.CNPJ_Hotel, // Mantém o nome da coluna como está
+                'ID Reserva': nota.fk_ReservaClienteRecepcionistaQuarto_id_reserva,
+              },
+            ]);
+          } else {
+            setResult('Erro ao consultar nota. Verifique o ID informado.');
           }
           break;
 
@@ -77,6 +116,8 @@ function Financeiro() {
           <option value="listarPagamentos">Listar Pagamentos</option>
           <option value="consultarPagamento">Consultar Pagamento</option>
           <option value="confirmarPagamento">Confirmar Pagamento</option>
+          <option value="listarNotas">Listar Notas</option>
+          <option value="consultarNota">Consultar Nota</option>
         </select>
 
         {action === 'consultarPagamento' && (
@@ -94,6 +135,15 @@ function Financeiro() {
             placeholder="ID da Reserva"
             value={inputData.idReserva}
             onChange={(e) => setInputData({ ...inputData, idReserva: e.target.value })}
+          />
+        )}
+
+        {action === 'consultarNota' && (
+          <input
+            type="text"
+            placeholder="ID da Nota"
+            value={inputData.idNota}
+            onChange={(e) => setInputData({ ...inputData, idNota: e.target.value })}
           />
         )}
 
