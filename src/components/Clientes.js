@@ -58,7 +58,13 @@ function Clientes() {
           response = await fetch(`http://localhost:8080/api/clientes/cadastro/endereco/${cpf}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(enderecoData),
+            body: JSON.stringify({
+              Rua: enderecoData.rua,
+              Numero: enderecoData.numero,
+              Bairro: enderecoData.bairro,
+              Cep: enderecoData.cep,
+              fk_Pessoa_CPF: cpf,
+            }),
           });
           setResult(response.ok ? 'Endereço cadastrado com sucesso!' : 'Erro ao cadastrar endereço.');
           break;
@@ -80,7 +86,18 @@ function Clientes() {
             return;
           }
           response = await fetch(`http://localhost:8080/api/clientes/buscar/${cpf}`);
-          setResult(response.ok ? await response.json() : 'Erro ao buscar cliente.');
+          if (response.ok) {
+            const cliente = await response.json();
+              
+              // Verifica se os dados retornados são um objeto
+            if (cliente && typeof cliente === 'object' && Object.keys(cliente).length > 0) {
+              setResult([cliente]); // Envolvendo em um array para exibir na tabela
+            } else {
+              setResult('Nenhum cliente encontrado.');
+            }
+          } else {
+            setResult('Erro ao buscar cliente.');
+          }
           break;
 
         case 'atualizarCliente':
@@ -91,7 +108,11 @@ function Clientes() {
           response = await fetch(`http://localhost:8080/api/clientes/atualizar/${cpf}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(clienteData),
+            body: JSON.stringify({
+              email: clienteData.email,
+              telefone1: clienteData.telefone1,
+              telefone2: clienteData.telefone2,
+            }),
           });
           setResult(response.ok ? 'Cliente atualizado com sucesso!' : 'Erro ao atualizar cliente.');
           break;
@@ -104,7 +125,12 @@ function Clientes() {
           response = await fetch(`http://localhost:8080/api/clientes/atualizar/endereco/${cpf}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(enderecoData),
+            body: JSON.stringify({
+              Rua: enderecoData.rua,
+              Numero: enderecoData.numero,
+              Bairro: enderecoData.bairro,
+              Cep: enderecoData.cep,
+            }),
           });
           setResult(response.ok ? 'Endereço atualizado com sucesso!' : 'Erro ao atualizar endereço.');
           break;
@@ -114,14 +140,20 @@ function Clientes() {
             setResult('Preencha todos os campos obrigatórios para cadastrar o pagamento.');
             return;
           }
-          response = await fetch(`http://localhost:8080/api/clientes/cadastro/pagamento/${cpf}`, {
+          response = await fetch('http://localhost:8080/api/clientes/cadastro/pagamento', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(pagamentoData),
+            body: JSON.stringify({
+              cpf: cpf,
+              numero: pagamentoData.numero,
+              cvv: parseInt(pagamentoData.cvv, 10),
+              vencimento: pagamentoData.vencimento,
+              tipo: pagamentoData.tipo,
+            }),
           });
           setResult(response.ok ? 'Pagamento cadastrado com sucesso!' : 'Erro ao cadastrar pagamento.');
           break;
-
+          
         default:
           setResult('Selecione uma ação válida.');
           break;
@@ -162,7 +194,7 @@ function Clientes() {
             />
           )}
 
-          {['cadastrarPessoa', 'atualizarCliente'].includes(action) && (
+          {['cadastrarPessoa'].includes(action) && (
             <>
               <input
                 type="text"
@@ -170,6 +202,29 @@ function Clientes() {
                 value={clienteData.nome}
                 onChange={(e) => setClienteData({ ...clienteData, nome: e.target.value })}
               />
+              <input
+                type="email"
+                placeholder="Email"
+                value={clienteData.email}
+                onChange={(e) => setClienteData({ ...clienteData, email: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Telefone 1"
+                value={clienteData.telefone1}
+                onChange={(e) => setClienteData({ ...clienteData, telefone1: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Telefone 2"
+                value={clienteData.telefone2}
+                onChange={(e) => setClienteData({ ...clienteData, telefone2: e.target.value })}
+              />
+            </>
+          )}
+
+          {['atualizarCliente'].includes(action) && (
+            <>
               <input
                 type="email"
                 placeholder="Email"
