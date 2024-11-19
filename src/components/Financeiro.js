@@ -1,103 +1,144 @@
 import React, { useState } from 'react';
-import api from '../api/axiosConfig';
 import '../styles/financeiro.css';
 
+function Financeiro() {
+  const [action, setAction] = useState('');
+  const [result, setResult] = useState(null);
+  const [inputData, setInputData] = useState({
+    idReserva: '',
+    idPagamento: '',
+  });
 
-const Financeiro = () => {
-    const [opcaoSelecionada, setOpcaoSelecionada] = useState('');
-    const [idConsulta, setIdConsulta] = useState('');
-    const [resultado, setResultado] = useState([]);
-    const [erro, setErro] = useState('');
+  const handleAction = async () => {
+    try {
+      let response;
+      switch (action) {
+        case 'listarPagamentos':
+          response = await fetch('http://localhost:8080/api/pagamento/listar');
+          if (response.ok) {
+            setResult(await response.json());
+          } else {
+            setResult('Erro ao listar pagamentos.');
+          }
+          break;
 
-    const handleConsultar = async () => {
-        try {
-            setErro('');
-            setResultado([]);
-            if (opcaoSelecionada === 'listarPagamentos') {
-                const response = await api.get('/pagamento/listar');
-                setResultado(response.data);
-            } else if (opcaoSelecionada === 'listarNotas') {
-                const response = await api.get('/notas/listar');
-                setResultado(response.data);
-            } else if (opcaoSelecionada === 'consultarPagamento') {
-                if (!idConsulta) throw new Error('Informe o ID do pagamento.');
-                const response = await api.get(`/pagamento/${idConsulta}`);
-                setResultado([response.data]); // Colocando em array para renderização consistente
-            } else if (opcaoSelecionada === 'consultarNota') {
-                if (!idConsulta) throw new Error('Informe o ID da nota.');
-                const response = await api.get(`/notas/${idConsulta}`);
-                setResultado([response.data]); // Colocando em array para renderização consistente
+        case 'consultarPagamento':
+          if (!inputData.idPagamento) {
+            setResult('O ID do pagamento é obrigatório.');
+            return;
+          }
+          response = await fetch(`http://localhost:8080/api/pagamento/${inputData.idPagamento}`);
+          if (response.ok) {
+            setResult(await response.json());
+          } else {
+            setResult('Erro ao consultar pagamento. Verifique o ID informado.');
+          }
+          break;
+
+        case 'confirmarPagamento':
+          if (!inputData.idReserva) {
+            setResult('O ID da reserva é obrigatório.');
+            return;
+          }
+          response = await fetch(
+            `http://localhost:8080/api/pagamento/confirmar/${inputData.idReserva}`,
+            {
+              method: 'PUT', // Ajustado para PUT
             }
-        } catch (error) {
-            console.error('Erro ao realizar consulta:', error);
-            setErro('Erro ao realizar a consulta. Verifique os dados ou tente novamente.');
-        }
-    };
+          );
+          if (response.ok) {
+            setResult('Pagamento confirmado com sucesso!');
+          } else {
+            const errorData = await response.json();
+            setResult(`Erro ao confirmar pagamento: ${errorData.message || 'Erro desconhecido.'}`);
+          }
+          break;
 
-    return (
-        <div>
-            <h1>Financeiro</h1>
-            <label htmlFor="opcoes">Selecione uma opção:</label>
-            <select
-                id="opcoes"
-                value={opcaoSelecionada}
-                onChange={(e) => setOpcaoSelecionada(e.target.value)}
-            >
-                <option value="">-- Escolha uma opção --</option>
-                <option value="listarPagamentos">Listar todos os pagamentos</option>
-                <option value="listarNotas">Listar todas as notas</option>
-                <option value="consultarPagamento">Consultar pagamento específico</option>
-                <option value="consultarNota">Consultar nota específica</option>
-            </select>
+        default:
+          setResult('Selecione uma ação válida.');
+          break;
+      }
+    } catch (error) {
+      console.error('Erro ao executar ação:', error);
+      setResult('Erro ao realizar a ação. Verifique os dados e tente novamente.');
+    }
+  };
 
-            {(opcaoSelecionada === 'consultarPagamento' || opcaoSelecionada === 'consultarNota') && (
-                <div>
-                    <label htmlFor="idConsulta">
-                        Informe o ID {opcaoSelecionada === 'consultarPagamento' ? 'do pagamento' : 'da nota'}:
-                    </label>
-                    <input
-                        id="idConsulta"
-                        type="text"
-                        value={idConsulta}
-                        onChange={(e) => setIdConsulta(e.target.value)}
-                    />
-                </div>
-            )}
+  return (
+    <div className="financeiro-container">
+      <h2>Gerenciamento Financeiro</h2>
+      <div className="financeiro-actions">
+        <select onChange={(e) => setAction(e.target.value)} value={action}>
+          <option value="">Selecione uma ação</option>
+          <option value="listarPagamentos">Listar Pagamentos</option>
+          <option value="consultarPagamento">Consultar Pagamento</option>
+          <option value="confirmarPagamento">Confirmar Pagamento</option>
+        </select>
 
-            <button onClick={handleConsultar}>Consultar</button>
+        {action === 'consultarPagamento' && (
+          <input
+            type="text"
+            placeholder="ID do Pagamento"
+            value={inputData.idPagamento}
+            onChange={(e) => setInputData({ ...inputData, idPagamento: e.target.value })}
+          />
+        )}
 
-            {erro && <p style={{ color: 'red' }}>{erro}</p>}
+        {action === 'confirmarPagamento' && (
+          <input
+            type="text"
+            placeholder="ID da Reserva"
+            value={inputData.idReserva}
+            onChange={(e) => setInputData({ ...inputData, idReserva: e.target.value })}
+          />
+        )}
 
-            <div>
-                <h3>Resultados:</h3>
-                {resultado.length === 0 ? (
-                    <p>Nenhum resultado encontrado.</p>
-                ) : (
-                    <ul>
-                        {resultado.map((item, index) => (
-                            <li key={index}>
-                                {opcaoSelecionada.includes('Pagamento') ? (
-                                    <>
-                                        <p>ID: {item.Pagamento_PK}</p>
-                                        <p>Status: {item.Status}</p>
-                                        <p>Valor: {item.Valor}</p>
-                                        <p>Data: {item.Data}</p>
-                                    </>
-                                ) : (
-                                    <>
-                                        <p>Código: {item.Codigo}</p>
-                                        <p>Valor: {item.Valor}</p>
-                                        <p>CNPJ: {item.CNPJ_Hotel}</p>
-                                        <p>Reserva ID: {item.fk_ReservaClienteRecepcionistaQuarto_id_reserva}</p>
-                                    </>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-        </div>
-    );
-};
+        <button onClick={handleAction}>Executar</button>
+      </div>
+      <h3>Resultados:</h3>
+      {result && typeof result === 'string' ? (
+        <p>{result}</p>
+      ) : result && Array.isArray(result) ? (
+        <table className="result-table">
+          <thead>
+            <tr>
+              {Object.keys(result[0] || {}).map((key, index) => (
+                <th key={index}>{key}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {result.map((item, index) => (
+              <tr key={index}>
+                {Object.values(item).map((value, subIndex) => (
+                  <td key={subIndex}>{value}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : result && typeof result === 'object' && result !== null ? (
+        <table className="result-table">
+          <thead>
+            <tr>
+              {Object.keys(result).map((key, index) => (
+                <th key={index}>{key}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {Object.values(result).map((value, index) => (
+                <td key={index}>{value}</td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      ) : (
+        <p>Nenhum resultado encontrado.</p>
+      )}
+    </div>
+  );
+}
 
 export default Financeiro;
