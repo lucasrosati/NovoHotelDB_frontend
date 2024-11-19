@@ -45,6 +45,7 @@ function Quartos() {
             }))
           );
           break;
+          
 
         case 'liberar':
           response = await fetch(`http://localhost:8080/api/quartos/liberar/${numeroQuarto}`, {
@@ -69,9 +70,13 @@ function Quartos() {
 
   return (
     <div className="quartos-container">
-      <h2>Gerenciamento de Quartos</h2>
+      <h2 className="quartos-header">Gerenciamento de Quartos</h2>
       <div className="quartos-actions">
-        <select onChange={(e) => setAction(e.target.value)} value={action}>
+        <select
+          className="dropdown-menu"
+          onChange={(e) => setAction(e.target.value)}
+          value={action}
+        >
           <option value="">Selecione uma ação</option>
           <option value="listar">Listar Quartos</option>
           <option value="consultar">Consultar Status do Quarto</option>
@@ -80,37 +85,42 @@ function Quartos() {
         </select>
         {(action === 'consultar' || action === 'liberar' || action === 'reservas') && (
           <input
+            className="input-field"
             type="text"
             placeholder="Número do Quarto"
             value={numeroQuarto}
             onChange={(e) => setNumeroQuarto(e.target.value)}
           />
         )}
-        <button onClick={handleAction}>Executar</button>
+        <button className="executar-button" onClick={handleAction}>
+          Executar
+        </button>
       </div>
-      <h3>Resultados:</h3>
-      {result && result.length > 0 ? (
-        <table className="result-table">
-          <thead>
-            <tr>
-              {Object.keys(result[0]).map((key) => (
-                <th key={key}>{key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {result.map((row, index) => (
-              <tr key={index}>
-                {Object.values(row).map((value, i) => (
-                  <td key={i}>{value}</td>
+      <h3 className="result-header">Resultados:</h3>
+      <div className="result-wrapper">
+        {result && result.length > 0 ? (
+          <table className="result-table">
+            <thead>
+              <tr>
+                {Object.keys(result[0]).map((key) => (
+                  <th key={key}>{key}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>Nenhum resultado encontrado.</p>
-      )}
+            </thead>
+            <tbody>
+              {result.map((row, index) => (
+                <tr key={index}>
+                  {Object.values(row).map((value, i) => (
+                    <td key={i}>{value}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>Nenhum resultado encontrado.</p>
+        )}
+      </div>
     </div>
   );
 }
