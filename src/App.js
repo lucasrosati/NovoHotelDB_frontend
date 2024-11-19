@@ -5,13 +5,14 @@ import Clientes from './components/Clientes';
 import Quartos from './components/Quartos';
 import Servicos from './components/Servicos';
 import Funcionarios from './components/Funcionarios'; // Importa o componente Funcionarios
+import Reservas from './components/Reservas'; // Importa o componente Reservas
 import './styles/App.css'; // Corrigido para usar a capitalização correta
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Bem-vindo ao NovoHotel Frontend</h1>
+        <h1>NovoHotel Management</h1>
         <Router>
           <nav>
             <ul>
@@ -30,6 +31,9 @@ function App() {
               <li>
                 <Link to="/funcionarios">Funcionários</Link>
               </li>
+              <li>
+                <Link to="/reservas">Reservas</Link>
+              </li>
             </ul>
           </nav>
           <Routes>
@@ -38,6 +42,7 @@ function App() {
             <Route path="/quartos" element={<Quartos />} />
             <Route path="/servicos" element={<Servicos />} />
             <Route path="/funcionarios" element={<Funcionarios />} />
+            <Route path="/reservas" element={<Reservas />} />
           </Routes>
         </Router>
       </header>
